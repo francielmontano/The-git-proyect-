@@ -3,7 +3,8 @@ from pathlib import Path
 
 _main_dir = Path('.minigit')
 
-def make_dir() -> str:
+def make_init() -> str:
+    """Crea los directorios '.minigit' y sus sub-directorios 'index' y 'commits'."""
 
     if _main_dir.exists():
         return "El repositorio local ya ha sido inicializado"
@@ -15,6 +16,7 @@ def make_dir() -> str:
 
 
 def copy_staging(file: str) -> None:
+    """Copia los archivos del directorio actual de trabajo y los tranfiere a la etapa de staging (index)."""
 
     if not Path('.minigit').exists():
         return "Error: No existe un repositorio iniciado: .minigit"
