@@ -188,11 +188,11 @@ Preparar el proyecto y verificar que Python pueda recibir comandos desde la term
 
 ### Tareas
 
-- [ ] Crear el repositorio en GitHub.
-- [ ] Crear el archivo `.gitignore`.
-- [ ] Ignorar la carpeta `.venv/`.
-- [ ] Clonar el repositorio.
-- [ ] Crear la estructura inicial.
+- [x] Crear el repositorio en GitHub.
+- [x] Crear el archivo `.gitignore`.
+- [x] Ignorar la carpeta `.venv/`.
+- [x] Clonar el repositorio.
+- [x] Crear la estructura inicial.
 - [ ] Verificar el funcionamiento de `sys.argv`.
 
 ### Primera prueba
