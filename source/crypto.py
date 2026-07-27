@@ -29,19 +29,3 @@ def generar_hash_tree(lista_de_archivos): # <--- Corregido nombre y :
 
     return motor.hexdigest()
 
-# ==========================================
-# PARA PROBARLO TÚ MISMO:
-# ==========================================
-if __name__ == "__main__":
-    # 1. Obtenemos el hash de un archivo real que tengas (ejemplo: crypto.py)
-    h1 = obtener_hash_archivo("source/crypto.py")
-    
-    # 2. Creamos una lista de prueba usando ese hash
-    prueba_lista = [("crypto.py", h1)]
-    
-    # 3. Llamamos a la segunda función
-    id_commit = generar_hash_tree(prueba_lista)
-    
-    print(f"Hash del archivo: {h1}")
-    print(f"Hash del Commit (Tree): {id_commit}")
-
