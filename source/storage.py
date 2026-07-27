@@ -15,7 +15,7 @@ def make_init() -> str:
     return "El repositorio ha sido inicializado con exito!"
 
 
-def copy_staging(file: str) -> None:
+def copy_staging(file: str) -> str | None:
     """Copia los archivos del directorio actual de trabajo y los tranfiere a la etapa de staging (index)."""
 
     if not Path('.minigit').exists():
