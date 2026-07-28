@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-def obtener_hash_archivo(ruta_archivo):
+def obtener_hash(ruta_archivo):
     sha1 = hashlib.sha1()
     try:
         with open(ruta_archivo, 'rb') as f:
@@ -14,10 +14,10 @@ def obtener_hash_archivo(ruta_archivo):
     except FileNotFoundError:
         return None
 
-def generar_hash_tree(lista_de_rutas):
+def hash_tree(lista_de_rutas):
     componentes = []
     for ruta in lista_de_rutas:
-        hash_actual = obtener_hash_archivo(ruta)
+        hash_actual = obtener_hash(ruta)
         nombre_archivo = os.path.basename(ruta)
         
         if hash_actual:
@@ -35,4 +35,4 @@ def generar_hash_tree(lista_de_rutas):
 
 if __name__ == "__main__":
     archivos = ["source/crypto.py", "source/storage.py"]
-    print(generar_hash_tree(archivos))
+    print(hash_tree(archivos))

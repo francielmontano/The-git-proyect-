@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
-from datetime import datetime, date
+from datetime import datetime, timezone, timedelta
+from crypto import obtener_hash
 
 def create_commit() -> tuple:
     """La función crea automáticamente un nuevo directorio de commit con un nombre secuencial"""
@@ -18,6 +19,8 @@ def create_commit() -> tuple:
         
     return new_dir,sub_dir
 
+
+
 def move_stagin(ruta: Path) -> str | None:
     """Copia los archivos que estan en el staging a la carpeta del commit correspondiente"""
     
@@ -26,13 +29,11 @@ def move_stagin(ruta: Path) -> str | None:
     if not any(staging.iterdir()):
             return "No existen archivos en la etapa de stagin. Agrege sus archivos"
     for archivo in staging.iterdir():
-        
-        if archivo.is_dir():
-            shutil.copytree(archivo,ruta/archivo.name,dirs_exist_ok=True)
-        else:
-            shutil.copy2(archivo,ruta)
+        shutil.move(archivo, ruta / archivo.name)
 
-def meta_data(comentario: str, hash: str, ruta ,pre_hash: str = None):
+
+
+def meta_data(comentario: str, hash: str, ruta: Path ,pre_hash: str = ""):
     """Crea un archivo txt con la metadata del commit """
     
     usuario = Path.home().name
@@ -49,3 +50,41 @@ date {fecha_formateada}
     
     with open(ruta / "metadata.txt", "w", encoding ="utf-8") as f:
         f.write(texto)
+
+
+
+def command_log():
+    main_dir = Path(".minigit/commits")
+
+    ordered_files = sorted(
+        main_dir.iterdir(), 
+        key=lambda x: int(x.stem.split('_')[-1]) if '_' in x.stem else 0
+    )
+
+    for file in ordered_files:
+        metadata = file / "metadata/metadata.txt"
+
+        lines = metadata.read_text(encoding='utf-8').splitlines()
+
+        unix_str, offset_str = lines[3].split()[1], lines[3].split()[2]
+
+        commit_hash = obtener_hash(metadata)
+        date = datetime.fromtimestamp(int(unix_str), timezone(timedelta(hours=int(offset_str[:3]))))
+        final_date = date.strftime("%a %b %d %H:%M:%S %Y %z")
+        autor = lines[2].split()[1]
+        coment = lines[5]
+
+        log = f"""
+        commit {commit_hash}
+        Autor: {autor}
+        date: {final_date}
+
+            {coment}
+        """
+        print(log)
+
+
+
+variable= create_commit()
+
+move_stagin(variable[0])
