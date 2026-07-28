@@ -53,7 +53,9 @@ date {fecha_formateada}
 
 
 
-def command_log():
+def command_log() -> None:
+    """Imprime en pantalla el contenidos de los metadatos de todos los commits"""
+
     main_dir = Path(".minigit/commits")
 
     ordered_files = sorted(
@@ -82,9 +84,5 @@ def command_log():
             {coment}
         """
         print(log)
-
-
-
-variable= create_commit()
-
-move_stagin(variable[0])
+        
+    return None
