@@ -26,8 +26,6 @@ def move_stagin(ruta: Path) -> str | None:
     
     staging = Path('.minigit/index')
     ruta.mkdir(parents=True, exist_ok=True)
-    if not any(staging.iterdir()):
-            return "No existen archivos en la etapa de stagin. Agrege sus archivos"
     for archivo in staging.iterdir():
         shutil.move(archivo, ruta / archivo.name)
 

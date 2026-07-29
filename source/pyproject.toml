@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minigit"
+version = "0.1.0"
+description = "Mi propia herramienta de control de versiones tipo Git en Python"
+requires-python = ">=3.8"
+dependencies = [
+    "typer>=0.9.0",
+]
+
+[tool.setuptools]
+py-modules = ["main", "storage", "history", "crypto"]
+
+[project.scripts]
+minigit = "main:app"
