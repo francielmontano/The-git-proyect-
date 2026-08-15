@@ -31,7 +31,7 @@ def move_stagin(ruta: Path) -> str | None:
 
 
 
-def meta_data(comentario: str, hash: str, ruta: Path ,pre_hash: str = ""):
+def meta_data(comentario: str, hash: str, ruta: Path ,pre_hash: str | None = ""):
     """Crea un archivo txt con la metadata del commit """
     
     usuario = Path.home().name
@@ -68,7 +68,7 @@ def command_log() -> None:
 
         unix_str, offset_str = lines[3].split()[1], lines[3].split()[2]
 
-        commit_hash = obtener_hash(metadata)
+        commit_hash = f"\033[33m{obtener_hash(metadata)}\033[0m"
         date = datetime.fromtimestamp(int(unix_str), timezone(timedelta(hours=int(offset_str[:3]))))
         final_date = date.strftime("%a %b %d %H:%M:%S %Y %z")
         autor = lines[2].split()[1]
