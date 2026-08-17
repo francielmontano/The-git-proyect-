@@ -1,8 +1,13 @@
 from pathlib import Path
 import tempfile
-def crear_directorio(ruta: Path):
+def crear_directorio(ruta_str: str):
     """Crea el directorio si no existe."""
-    Path(ruta).mkdir(parents=True, exist_ok=True)
+    ruta =Path(ruta_str)
+    if ruta.suffix:
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        ruta.touch(exist_ok=True)
+    else:
+        ruta.mkdir(parents=True, exist_ok=True)
 
 def exists(path: str) -> bool:
     """Verifica si un archivo o directorio existe."""
@@ -18,5 +23,5 @@ def leer_byte(ruta: str):
 def escribir_bytes(ruta: str, datos: bytes):
     target = Path(ruta)
     verificar = exists(ruta)
-    if verificar:
+    if not verificar:
         target.write_bytes(datos)
