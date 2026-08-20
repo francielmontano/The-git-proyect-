@@ -22,6 +22,5 @@ def leer_byte(ruta: str):
 
 def escribir_bytes(ruta: str, datos: bytes):
     target = Path(ruta)
-    verificar = exists(ruta)
-    if not verificar:
-        target.write_bytes(datos)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(datos)
