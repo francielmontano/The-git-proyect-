@@ -23,3 +23,8 @@ def escribir_bytes(ruta: str, datos: bytes):
     target = Path(ruta)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(datos)
+
+def listar_contenido(ruta_carpeta: str):
+    carpeta = Path(ruta_carpeta)
+    if carpeta.is_dir():
+        return [elemento.name for elemento in carpeta.iterdir()]
