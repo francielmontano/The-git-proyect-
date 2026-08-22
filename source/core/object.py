@@ -73,18 +73,19 @@ class Tree(GitObject):
     def __init__(self, entries=None):
         self.entries = entries if entries is not None else []
         self._crypto = Crypto()
+
     @property
     def type_name(self):
         return "tree"
 
-    def add_entry(self, mode, path, sha):
-        self.entries.append((mode, path, sha))
+    def add_entry(self, path, sha):
+        self.entries.append((path, sha))
 
     def serialize(self):
-        sorted_entries = sorted(self.entries, key=lambda entry: entry[1])
+        sorted_entries = sorted(self.entries, key=lambda entry: entry[0])
         result = bytearray()
-        for mode, path, sha in sorted_entries:
-            header = f"{mode} {path}\x00".encode("utf-8")
+        for path, sha in sorted_entries:
+            header = f"{path}\x00".encode("utf-8")
             sha_bytes = bytes.fromhex(sha)
             result.extend(header + sha_bytes)
         return bytes(result)
@@ -97,12 +98,12 @@ class Tree(GitObject):
         while idx < total_len:
             null_idx = data.index(b"\x00", idx)
 
-            header = data[idx:null_idx].decode("utf-8")
-            mode, path = header.split(" ", 1)
+            # El encabezado ahora solo contiene el path
+            path = data[idx:null_idx].decode("utf-8")
 
             sha_bytes = data[null_idx + 1 : null_idx + 21]
             sha_hex = sha_bytes.hex()
 
-            self.entries.append((mode, path, sha_hex))
+            self.entries.append((path, sha_hex))
             idx = null_idx + 21
         return self

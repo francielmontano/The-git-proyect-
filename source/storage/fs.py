@@ -1,9 +1,8 @@
 from pathlib import Path
 import tempfile
-def crear_directorio(ruta_str: str):
-    """Crea el directorio si no existe."""
-    ruta =Path(ruta_str)
-    if ruta.suffix:
+def crear_directorio(ruta_str: str, es_archivo: bool = False):
+    ruta = Path(ruta_str)
+    if es_archivo:
         ruta.parent.mkdir(parents=True, exist_ok=True)
         ruta.touch(exist_ok=True)
     else:

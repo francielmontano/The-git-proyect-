@@ -32,4 +32,3 @@ class Objetos:
         header = partes[0].decode("utf-8")
         tipo_obj = header.split(" ")[0]
         return tipo_obj, partes[1]
-    
