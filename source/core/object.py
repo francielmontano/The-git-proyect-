@@ -1,9 +1,9 @@
-from utils.crypto import crypto
+from source.utils.crypto import Crypto
 
 class GitObject:
 
     def __init__(self):
-        self._crypto = crypto()
+        self._crypto = Crypto()
 
     @property
     def type_name(self):
@@ -25,9 +25,6 @@ class Blob(GitObject):
     @property
     def type_name(self):
         return "blob"
-
-    def serialize(self):
-        return self.content
 
     def deserialize(self, data):
         self.content = data
@@ -53,10 +50,9 @@ class Commit(GitObject):
 
     def serialize(self):
         texto = f"""tree {self.tree_hash}
-        parent {self.parent_hash}
-        author {self.author}
-        
-        {self.message}
+parent {self.parent_hash}
+author {self.author}\n\n
+{self.message}
         """
         return texto.encode("utf-8")
 
@@ -64,7 +60,6 @@ class Commit(GitObject):
         text = data.decode("utf-8")
         header_part, self.message = text.split("\n\n", 1)
     
-        self.parent_hash = None
         for line in header_part.splitlines():
             if line.startswith("tree "):
                 self.tree_hash = line.split(" ", 1)[1]
@@ -72,11 +67,12 @@ class Commit(GitObject):
                 self.parent_hash = line.split(" ", 1)[1]
             elif line.startswith("author "):
                 self.author = line.split(" ", 1)[1]
+        return self
 
 class Tree(GitObject):
     def __init__(self, entries=None):
         self.entries = entries if entries is not None else []
-        self._crypto = crypto()
+        self._crypto = Crypto()
     @property
     def type_name(self):
         return "tree"
@@ -109,3 +105,4 @@ class Tree(GitObject):
 
             self.entries.append((mode, path, sha_hex))
             idx = null_idx + 21
+        return self

@@ -1,6 +1,6 @@
 import hashlib
 
-class crypto:
+class Crypto:
 
     def __init__(self, enconding = "utf-8",chunk_size = 64 * 1024):
         self.enconding =  enconding
