@@ -9,6 +9,10 @@ class Head:
             contenido = archivo.read()
         return contenido
 
-    def write_head(self,breach: str):
+    def write_rama(self,breach: str):
         with open(self.git_dir, 'w', encoding='utf-8') as archivo:
             archivo.write(f"ref: refs/heads/{breach}")
+
+    def write_head(self,data: str):
+            with open(self.git_dir, 'w', encoding='utf-8') as archivo:
+                archivo.write(f"{data}")

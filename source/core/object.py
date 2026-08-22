@@ -1,5 +1,4 @@
-from source.utils.crypto import Crypto
-
+from utils.crypto import Crypto
 class GitObject:
 
     def __init__(self):
@@ -19,7 +18,7 @@ class GitObject:
         pass
 
 class Blob(GitObject):
-    def __init__(self, content=b""):
+    def __init__(self, content: bytes):
         self.content = content
 
     @property
@@ -51,9 +50,9 @@ class Commit(GitObject):
     def serialize(self):
         texto = f"""tree {self.tree_hash}
 parent {self.parent_hash}
-author {self.author}\n\n
-{self.message}
-        """
+author {self.author}
+
+{self.message}"""
         return texto.encode("utf-8")
 
     def deserialize(self, data):
@@ -82,28 +81,25 @@ class Tree(GitObject):
         self.entries.append((path, sha))
 
     def serialize(self):
+        # Ordenamos las entradas por su ruta
         sorted_entries = sorted(self.entries, key=lambda entry: entry[0])
-        result = bytearray()
+        result = []
         for path, sha in sorted_entries:
-            header = f"{path}\x00".encode("utf-8")
-            sha_bytes = bytes.fromhex(sha)
-            result.extend(header + sha_bytes)
-        return bytes(result)
+            # Guardamos la ruta y el hash separados por un espacio
+            result.append(f"{path} {sha}")
+        
+        # Unimos todo con saltos de línea y lo convertimos a bytes legibles (UTF-8)
+        return "\n".join(result).encode("utf-8")
 
     def deserialize(self, data):
         self.entries = []
-        idx = 0
-        total_len = len(data)
-
-        while idx < total_len:
-            null_idx = data.index(b"\x00", idx)
-
-            # El encabezado ahora solo contiene el path
-            path = data[idx:null_idx].decode("utf-8")
-
-            sha_bytes = data[null_idx + 1 : null_idx + 21]
-            sha_hex = sha_bytes.hex()
-
-            self.entries.append((path, sha_hex))
-            idx = null_idx + 21
+        if not data:
+            return self
+            
+        # Decodificamos el texto y lo separamos línea por línea
+        lineas = data.decode("utf-8").split("\n")
+        for linea in lineas:
+            if linea.strip(): # Evitamos líneas vacías
+                path, sha_hex = linea.split(" ", 1)
+                self.entries.append((path, sha_hex))
         return self

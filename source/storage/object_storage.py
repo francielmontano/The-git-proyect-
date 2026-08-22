@@ -1,11 +1,11 @@
-import fs
-from source.utils.crypto import crypto
+from . import fs
+from utils.crypto import Crypto
 from pathlib import Path
 
 class Objetos:
     def __init__(self,ruta:str):
         self.fs = fs
-        self.crypto = crypto()
+        self.crypto = Crypto()
         self.ruta = Path(ruta)
 
     def storage_object(self,obj_data: str, data:bytes):
@@ -22,13 +22,30 @@ class Objetos:
         return hash
 
     def read_object(self, hash):
-        ruta_objeto = self.ruta / hash[:2] / hash[2:]
-
+        hash_texto = hash.decode('utf-8') if isinstance(hash, bytes) else hash
+        ruta_objeto = Path(self.ruta / hash_texto[:2] / hash_texto[2:])
+    
         if not self.fs.exists(ruta_objeto):
             return None
-
+    
+        # 1. Leemos los bytes originales del archivo de forma intacta
         data = self.fs.leer_byte(ruta_objeto)
-        partes = data.split(b"\x00",1)
-        header = partes[0].decode("utf-8")
-        tipo_obj = header.split(" ")[0]
-        return tipo_obj, partes[1]
+        texto = data.decode('utf-8')
+        
+        lineas = texto.splitlines()
+        if not lineas:
+            print(f"⚠️ ERROR: El objeto {hash_texto} está vacío.")
+            return None
+    
+        # 2. Identificación dinámica del tipo de objeto sin recortar la data
+        primera_linea = lineas[0]
+        
+        if primera_linea.startswith("type "):
+            tipo_obj = primera_linea.split(" ")[1]
+        elif primera_linea.startswith("tree "):
+            tipo_obj = "commit"
+        else:
+            tipo_obj = "blob"
+    
+        # 3. Devolvemos el tipo detectado y la DATA ORIGINAL intacta del archivo
+        return tipo_obj, data

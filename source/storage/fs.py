@@ -12,12 +12,11 @@ def exists(path: str) -> bool:
     """Verifica si un archivo o directorio existe."""
     return Path(path).exists()
 
-def leer_byte(ruta: str):
-    verificar = exists(ruta)
-    if verificar:
-        bytes_content: bytes = Path(ruta).read_bytes()
-        return bytes_content
-    return None
+def leer_byte(ruta):
+    objeto_ruta = Path(ruta)
+    if objeto_ruta.is_file():
+        return objeto_ruta.read_bytes()
+    else: return None
 
 def escribir_bytes(ruta: str, datos: bytes):
     target = Path(ruta)
@@ -27,4 +26,5 @@ def escribir_bytes(ruta: str, datos: bytes):
 def listar_contenido(ruta_carpeta: str):
     carpeta = Path(ruta_carpeta)
     if carpeta.is_dir():
-        return [elemento.name for elemento in carpeta.iterdir()]
+        return [elemento for elemento in carpeta.iterdir()]
+    return None

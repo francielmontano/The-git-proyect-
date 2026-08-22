@@ -4,7 +4,7 @@ from pathlib import Path
 class Index:
     def __init__(self, repo_path):
         self.repo_path = Path(repo_path)
-        self.index_file = self.repo_path / ".minigit" / "index.json"
+        self.index_file = self.repo_path / "index.json"
         self.entries = set()
 
     def load(self):
