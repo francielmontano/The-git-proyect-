@@ -15,6 +15,9 @@ class Index:
             self.entries = set()
 
     def add(self, filepath: str):
+        # 1. PASO CLAVE: Cargar lo que ya estaba guardado en el disco
+        self.load()
+        
         clean_path = str(Path(filepath).as_posix())
         self.entries.add(clean_path)
         self.save()
@@ -26,7 +29,15 @@ class Index:
             json.dump(sorted(list(self.entries)), f, indent=4)
 
     def remove(self, filepath: str):
+        self.load() # Cargar antes de remover
         clean_path = str(Path(filepath).as_posix())
         if clean_path in self.entries:
             self.entries.remove(clean_path)
             self.save()
+
+    # core/index.py
+
+    def clear(self):
+        """Vacía completamente todas las entradas del índice y guarda el archivo."""
+        self.entries.clear()
+        self.save()

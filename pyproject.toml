@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minigit"
+version = "0.1.0"
+dependencies = [
+    "typer",
+    "rich",
+]
+
+# Crea el alias ejecutable 'minigit' apuntando a la app de Typer
+[project.scripts]
+minigit = "cli.commands:app"
+
+[tool.setuptools.packages.find]
+where = ["source"]
