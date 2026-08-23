@@ -56,6 +56,7 @@ class Repository:
         commit = Commit(hash_tree, parent.decode("utf-8"), author, message)
         hash_commit = self.objeto.storage_object(commit.type_name, commit.serialize())
         self.ref.write_head(hash_commit)
+        self._index.clear()
 
     def log(self):
         parent_commit = fs.leer_byte(self.ref.git_dir)
