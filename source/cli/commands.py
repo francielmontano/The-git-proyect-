@@ -67,8 +67,23 @@ def add(
     # === MODO AGREGAR ARCHIVO ÚNICO ===
     path = Path(target)
     if not path.exists():
-        print(f"[bold red]Error:[/bold red] El archivo '{target}' no existe.")
-        raise typer.Exit(code=1)
+        # Buscamos archivos que coincidan con el nombre proporcionado en cualquier subcarpeta
+        coincidencias = [
+            p for p in Path(".").rglob(target) 
+            if p.is_file() and not any(part.startswith(".minigit") for part in p.parts)
+        ]
+        
+        if len(coincidencias) == 1:
+            path = coincidencias[0]
+            print(f"[dim]Ruta autocompletada:[/dim] {path.as_posix()}")
+        elif len(coincidencias) > 1:
+            print(f"[bold red]Error:[/bold red] Hay múltiples archivos con el nombre '{target}':")
+            for c in coincidencias:
+                print(f" - {c.as_posix()}")
+            raise typer.Exit(code=1)
+        else:
+            print(f"[bold red]Error:[/bold red] El archivo '{target}' no existe.")
+            raise typer.Exit(code=1)
 
     clean_path = str(path.as_posix())
     resultado = repo.add(clean_path)
