@@ -100,5 +100,44 @@ def commit(
     repo.commit(author, message)
 
 @app.command()
-def log():
-    repo.log()
+def log(
+    oneline: Annotated[
+        bool, 
+        typer.Option(
+            "--oneline", 
+            "-o", 
+            help="Muestra el log en formato resumido (hash corto y primera línea)."
+        )
+    ] = False
+):
+    """Muestra el historial de commits del repositorio."""
+    mis_commits = list(repo.log())
+    for contenido in mis_commits:
+        if oneline:
+            partes = contenido.split("\n\n", 1)
+            cabeceras = partes[0]
+            mensaje = partes[1] if len(partes) > 1 else ""
+
+            hash_corto = ""
+            for linea in cabeceras.splitlines():
+                if linea.startswith("tree "):
+                    hash_largo = linea.split(" ")[1].strip()
+                    hash_corto = hash_largo[:7]
+                    break
+            print(f"{hash_corto} {mensaje}")
+        else:
+            print(contenido)
+            print("-" * 20)
+
+@app.command()
+def restaurar(
+    commit_hash: Annotated[
+        str,
+        typer.Argument(
+            help="El hash del commit o referencia que deseas restaurar."
+        )
+    ]
+):
+    """Restaura el repositorio a un commit específico."""
+    repo.restorage(commit_hash)
+    print(f"[green]Se ha restaurado el repositorio al commit:[/green] {commit_hash}")

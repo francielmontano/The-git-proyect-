@@ -5,7 +5,7 @@ from .object import Blob, Commit, Tree
 from utils.crypto import Crypto
 from storage.object_storage import Objetos
 from pathlib import Path
-
+from storage.reparar import restaurar
 class Repository:
     def __init__(self, ruta=".minigit", rama="main"):
         self.ruta = Path(ruta)
@@ -68,7 +68,7 @@ class Repository:
                 if linea.startswith("parent "):
                     parent_hash = linea.split(" ")[1]
                     break
-            print(contenido_texto, end="\n\n")
+            yield contenido_texto
             parent_commit = parent_hash
 
     def remove(self, file):
@@ -80,3 +80,16 @@ class Repository:
         """Vacía todo el staging."""
         if fs.exists(self.ruta):
             self._index.clear()
+
+    def restorage(self,tree):
+        """Restaura los objetos blob a su archivo original"""
+        carpeta_ruta = tree[:2]
+        ruta = tree[2:]
+        ruta_pricipal = Path(self.ruta / "objects")
+        tree_ruta= fs.leer_byte(ruta_pricipal / carpeta_ruta / ruta).decode("utf-8")
+
+        for linea in tree_ruta.splitlines():
+            archivo_nombre, hash_commit = linea.rsplit(' ', 1)
+            carpeta_archivo = hash_commit[:2]
+            ruta_archivo = hash_commit[2:]
+            restaurar(Path(ruta_pricipal / (carpeta_archivo) / ruta_archivo), archivo_nombre)
