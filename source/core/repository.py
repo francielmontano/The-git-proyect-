@@ -56,7 +56,6 @@ class Repository:
         commit = Commit(hash_tree, parent.decode("utf-8"), author, message)
         hash_commit = self.objeto.storage_object(commit.type_name, commit.serialize())
         self.ref.write_head(hash_commit)
-        self._index.clear()
 
     def log(self):
         parent_commit = fs.leer_byte(self.ref.git_dir)
@@ -93,3 +92,6 @@ class Repository:
             carpeta_archivo = hash_commit[:2]
             ruta_archivo = hash_commit[2:]
             restaurar(Path(ruta_pricipal / (carpeta_archivo) / ruta_archivo), archivo_nombre)
+    
+    def status(self):
+        return self._index.get_status_report()
