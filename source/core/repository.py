@@ -58,8 +58,7 @@ class Repository:
         self.ref.write_head(hash_commit)
 
     def log(self):
-        parent_commit = fs.leer_byte(self.ref.git_dir)
-        parent_commit.decode("utf-8")
+        parent_commit = fs.leer_byte(self.ref.git_dir).decode("utf-8")
         while parent_commit != "":
             parent = self.objeto.read_object(parent_commit)
             contenido_texto = parent[1].decode('utf-8')
@@ -67,7 +66,7 @@ class Repository:
                 if linea.startswith("parent "):
                     parent_hash = linea.split(" ")[1]
                     break
-            yield contenido_texto
+            yield parent_commit,contenido_texto
             parent_commit = parent_hash
 
     def remove(self, file):
@@ -95,3 +94,41 @@ class Repository:
     
     def status(self):
         return self._index.get_status_report()
+    
+    def is_fast_forward(self, local_commit_hash, remote_commit_hash):
+        """
+        Verifica si se puede hacer push (Fast-Forward). Retorna True si el servidor es un ancestro del local, False en caso contrario.
+        """
+        # Si el servidor no tiene nada (primer push de la historia), se permite
+        if not remote_commit_hash:
+            return True
+
+        # Si ambos apuntan exactamente al mismo commit, ya está sincronizado
+        if local_commit_hash == remote_commit_hash:
+            return False
+
+        current_commit = local_commit_hash
+
+        # Recorremos la historia local hacia atrás buscando al servidor
+        while current_commit:
+            if current_commit == remote_commit_hash:
+                # ¡Encontramos al servidor en nuestra historia! 
+                # Significa que nosotros estamos más adelante. Push permitido.
+                return True
+
+            # Leemos el objeto actual para extraer su parent (igual que en tu log)
+            parent = self.objeto.read_object(current_commit)
+            contenido_texto = parent[1].decode('utf-8')
+
+            parent_hash = None
+            for linea in contenido_texto.splitlines():
+                if linea.startswith("parent "):
+                    parent_hash = linea.split(" ")[1].strip()
+                    break
+
+            # Avanzamos al siguiente parent
+            current_commit = parent_hash
+
+        # Si el bucle termina y nunca encontramos el hash del servidor,
+        # significa que el servidor tiene commits que tú no tienes en tu historia local.
+        return False

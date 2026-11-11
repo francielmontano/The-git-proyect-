@@ -95,7 +95,13 @@ def log(
 ):
     """Muestra el historial de commits del repositorio."""
     mis_commits = list(repo.log())
-    for contenido in mis_commits:
+    
+    # Recorremos cada commit de la lista. 
+    # 'commit_hash' recibe el primer elemento y 'contenido' el segundo.
+    for commit_hash, contenido in mis_commits:
+        # Decodificamos el hash si viene en bytes
+        hash_str = commit_hash
+        
         if oneline:
             partes = contenido.split("\n\n", 1)
             cabeceras = partes[0]
@@ -109,6 +115,8 @@ def log(
                     break
             print(f"{hash_corto} {mensaje}")
         else:
+            # Opcional: si también quieres mostrar el hash completo en modo normal
+            print(f"commit {hash_str}")
             print(contenido)
             print("-" * 20)
 
